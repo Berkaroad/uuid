@@ -4,11 +4,11 @@ import (
 )
 
 func main(){
-	id := uuid.NewUUID()
+	id := uuid.New()
 	println(id.String())
 
 	idString := "8eb2a95c-846b-11e5-8550-8bf2f1cec1ce"
-	if thisID, err := uuid.ParseUUID(idString); err == nil {
+	if thisID, err := uuid.Parse(idString); err == nil {
 	    println(thisID.String())
 	}
 }
@@ -34,6 +34,7 @@ import (
 var locker *sync.Mutex
 var mBuffer [16]byte
 var uuidRegex *regexp.Regexp = regexp.MustCompile(`^\{?([a-fA-F0-9]{8})-?([a-fA-F0-9]{4})-?([a-fA-F0-9]{4})-?([a-fA-F0-9]{4})-?([a-fA-F0-9]{12})\}?$`)
+var emptyUUID = UUID{}
 var consoleLog = log.New(os.Stdout, "[uuid] ", log.LstdFlags)
 
 func init() {
@@ -45,7 +46,7 @@ func init() {
 type UUID [16]byte
 
 // 创建新的UUID
-func NewUUID() UUID {
+func New() UUID {
 	defer locker.Unlock()
 	locker.Lock()
 
@@ -62,7 +63,7 @@ func NewUUID() UUID {
 }
 
 // 解析UUID字符串
-func ParseUUID(uuidString string) (UUID, error) {
+func Parse(uuidString string) (UUID, error) {
 	var uuid [16]byte
 	if uuidString == "" {
 		return uuid, errors.New("Empty string")
@@ -76,6 +77,11 @@ func ParseUUID(uuidString string) (UUID, error) {
 	slice, _ := hex.DecodeString(strings.Join(parts[1:], ""))
 	copy(uuid[:], slice)
 	return uuid, nil
+}
+
+// 是否为空值
+func IsEmpty(uuid UUID) bool {
+	return uuid == emptyUUID
 }
 
 // UUID的字符串形式
@@ -101,7 +107,7 @@ func (self *UUID) UnmarshalJSON(data []byte) error {
 		return errors.New("Invalid UUID format")
 	}
 	data = data[1 : len(data)-1]
-	if uuid, err := ParseUUID(string(data)); err == nil {
+	if uuid, err := Parse(string(data)); err == nil {
 		*self = uuid
 		return nil
 	} else {
