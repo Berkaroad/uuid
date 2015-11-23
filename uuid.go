@@ -22,7 +22,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"log"
 	"math/rand"
 	"os"
 	"regexp"
@@ -35,7 +34,6 @@ var locker *sync.Mutex
 var mBuffer [16]byte
 var uuidRegex *regexp.Regexp = regexp.MustCompile(`^\{?([a-fA-F0-9]{8})-?([a-fA-F0-9]{4})-?([a-fA-F0-9]{4})-?([a-fA-F0-9]{4})-?([a-fA-F0-9]{12})\}?$`)
 var emptyUUID = UUID{}
-var consoleLog = log.New(os.Stdout, "[uuid] ", log.LstdFlags)
 
 func init() {
 	locker = &sync.Mutex{}
