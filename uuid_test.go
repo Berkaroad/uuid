@@ -25,3 +25,13 @@ func Test_IsEmpty(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func Test_PutToBytes(t *testing.T) {
+	uuid := New()
+	buffer := make([]byte, 16)
+	PutToBytes(buffer[0:16], uuid)
+	uuid2 := LoadFromBytes(buffer)
+	if uuid != uuid2 {
+		t.Fail()
+	}
+}
